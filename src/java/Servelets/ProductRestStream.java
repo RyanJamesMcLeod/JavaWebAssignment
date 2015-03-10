@@ -26,6 +26,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -42,7 +44,7 @@ public class ProductRestStream {
      */
     @GET
     @Produces("application/json")
-    public String doGet() {
+    public Response doGet() {
 
         String returnString;
 
@@ -67,7 +69,7 @@ public class ProductRestStream {
         } catch (SQLException ex) {
             returnString = "SQL Error: " + ex.getMessage();
         }
-        return returnString;
+        return Response.ok(returnString, MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -80,7 +82,7 @@ public class ProductRestStream {
     @GET
     @Path("{id}")
     @Produces("application/json")
-    public String doGetById(@PathParam("id") int id) {
+    public Response doGetById(@PathParam("id") int id) {
         String returnString;
 
         try (Connection conn = Credentials.getConnection()) {
@@ -104,7 +106,7 @@ public class ProductRestStream {
             returnString = "SQL Error: " + ex.getMessage();
         }
 
-        return returnString;
+        return Response.ok(returnString, MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -116,7 +118,7 @@ public class ProductRestStream {
      */
     @POST
     @Consumes("application/json")
-    public String doPost(String data) {
+    public Response doPost(String data) {
         JsonReader reader = Json.createReader(new StringReader(data));
         JsonObject json = reader.readObject();
         String returnString = "";
@@ -136,10 +138,10 @@ public class ProductRestStream {
                 returnString = ("<a>http://localhost:8080/JavaWebAssignment/stream/" + keys.getInt(1) + "</a>");
             }
         } catch (SQLException ex) {
-            returnString = "SQL Error: " + ex.getMessage();
+            return Response.status(500).build();
         }
         
-        return returnString;
+        return Response.ok(returnString, MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -153,7 +155,7 @@ public class ProductRestStream {
     @PUT
     @Path("{id}")
     @Consumes("application/json")
-    public String doPut(@PathParam("id") int id, String data) {
+    public Response doPut(@PathParam("id") int id, String data) {
         JsonReader reader = Json.createReader(new StringReader(data));
         JsonObject json = reader.readObject();
         String returnString = "";
@@ -172,9 +174,9 @@ public class ProductRestStream {
             returnString = ("<a>http://localhost:8080/JavaWebAssignment/stream/" + id + "</a>");
 
         } catch (SQLException ex) {
-            returnString = "SQL Error: " + ex.getMessage();
+            return Response.status(500).build();
         }
-        return returnString;
+        return Response.ok(returnString, MediaType.APPLICATION_JSON).build();
     }
 
     /**
@@ -187,7 +189,7 @@ public class ProductRestStream {
     @DELETE
     @Path("{id}")
     @Produces("application/json")
-    public String doDelete(@PathParam("id") int id) {
+    public Response doDelete(@PathParam("id") int id) {
         String returnString = "";
 
         try (Connection conn = credentials.Credentials.getConnection()) {
@@ -195,9 +197,9 @@ public class ProductRestStream {
             pstmt.setString(1, String.valueOf(id));
             pstmt.executeUpdate();
         } catch (SQLException ex) {
-            returnString = "SQL Error: " + ex.getMessage();
+            return Response.status(500).build();
         }
-        return returnString;
+        return Response.ok(returnString, MediaType.APPLICATION_JSON).build();
     }
 
 }
